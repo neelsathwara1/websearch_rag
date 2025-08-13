@@ -1,13 +1,16 @@
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
-import google.generativeai as genai
-from config import QDRANT_URL, QDRANT_API_KEY, QDRANT_HOST, QDRANT_PORT
+import openai
+from config import QDRANT_URL, QDRANT_API_KEY, QDRANT_HOST, QDRANT_PORT, OPENAI_API_KEY
 import logging
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
-QDRANT_COLLECTION = "DM_docs"
+# Configure OpenAI
+openai.api_key = OPENAI_API_KEY
+
+QDRANT_COLLECTION = "DM_docs_openai"
 
 # Connect to Qdrant Cloud if URL and API key are provided, otherwise use localhost
 if QDRANT_URL and QDRANT_API_KEY:
@@ -17,27 +20,28 @@ else:
     client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
     logger.info(f"Connected to local Qdrant: {QDRANT_HOST}:{QDRANT_PORT}")
 
-def embed_text_with_gemini(text: str) -> list:
-    # Gemini doesn't currently expose embeddings API publicly. Placeholder for embeddings.
-    # For real use, use a separate embedding model compatible with Qdrant (e.g., sentence-transformers)
-    logger.debug(f"Generating embedding for text: {text[:100]}...")
+def embed_text_with_openai(text: str) -> list:
+    """Generate embeddings using OpenAI's text-embedding-3-small model"""
+    logger.debug(f"Generating OpenAI embedding for text: {text[:100]}...")
     
     try:
-        import sentence_transformers
-        model = sentence_transformers.SentenceTransformer("all-MiniLM-L6-v2")
-        embedding = model.encode([text])[0].tolist()
-        logger.debug(f"Generated embedding with {len(embedding)} dimensions")
+        response = openai.embeddings.create(
+            model="text-embedding-3-small",
+            input=text
+        )
+        embedding = response.data[0].embedding
+        logger.debug(f"Generated OpenAI embedding with {len(embedding)} dimensions")
         return embedding
     except Exception as e:
-        logger.error(f"Error generating embedding: {e}")
+        logger.error(f"Error generating OpenAI embedding: {e}")
         raise e
 
 def retrieve_similar_docs(query: str, top_k: int = 3):
     logger.info(f"Retrieving similar documents for query: '{query}' (top_k={top_k})")
     
     try:
-        # Generate embedding for query
-        emb = embed_text_with_gemini(query)
+        # Generate embedding for query using OpenAI
+        emb = embed_text_with_openai(query)
         logger.debug(f"Query embedding generated successfully")
         
         # Search in Qdrant

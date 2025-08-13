@@ -7,7 +7,6 @@ requests
 beautifulsoup4
 qdrant-client
 python-dotenv
-google-generativeai
 google-search-results
 sentence-transformers
 PyPDF2

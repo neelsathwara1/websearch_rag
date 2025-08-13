@@ -1,7 +1,7 @@
-import google.generativeai as genai
+import openai
 from rag_module import retrieve_similar_docs
 from search_module import serpapi_search
-from config import GEMINI_API_KEY, PRIORITY_LINKS
+from config import OPENAI_API_KEY, PRIORITY_LINKS
 import logging
 import json
 
@@ -16,29 +16,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-genai.configure(api_key=GEMINI_API_KEY)
-
-# Configure safety settings to be more permissive
-safety_settings = [
-    {
-        "category": "HARM_CATEGORY_HARASSMENT",
-        "threshold": "BLOCK_NONE"
-    },
-    {
-        "category": "HARM_CATEGORY_HATE_SPEECH", 
-        "threshold": "BLOCK_NONE"
-    },
-    {
-        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-        "threshold": "BLOCK_NONE"
-    },
-    {
-        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-        "threshold": "BLOCK_NONE"
-    }
-]
-
-model = genai.GenerativeModel("gemini-2.5-pro", safety_settings=safety_settings)
+# Configure OpenAI
+openai.api_key = OPENAI_API_KEY
 
 def answer_query(query: str, priority_links=PRIORITY_LINKS):
     logger.info(f"Starting query processing for: '{query}'")
@@ -55,13 +34,13 @@ def answer_query(query: str, priority_links=PRIORITY_LINKS):
         logger.info(f"RAG search completed. Found {len(doc_context)} documents")
         
         # 3. Build context with length limits
-        logger.info("Step 3: Building context for Gemini...")
+        logger.info("Step 3: Building context for OpenAI...")
         all_context = serp_results + doc_context
         
-        # Limit context length to avoid token limits
+        # Limit context length to avoid token limits (OpenAI has different limits than Gemini)
         context_parts = []
         total_length = 0
-        max_context_length = 4000  # Conservative limit
+        max_context_length = 6000  # Conservative limit for OpenAI
         
         for item in all_context:
             if total_length + len(item) < max_context_length:
@@ -78,66 +57,44 @@ def answer_query(query: str, priority_links=PRIORITY_LINKS):
         
         logger.info(f"Context length: {len(context)} characters from {len(context_parts)} sources")
         
-        # Build a more structured prompt
-        prompt = f"""You are a helpful AI assistant specializing in digital marketing and Facebook advertising.
-
-Based on the following context information, provide a clear and helpful answer to the user's question.
+        # 4. Generate response with OpenAI
+        logger.info("Step 4: Generating OpenAI response...")
+        
+        try:
+            messages = [
+                {
+                    "role": "system",
+                    "content": "You are a helpful AI assistant specializing in digital marketing and Facebook advertising. Provide clear, comprehensive, and helpful answers based on the context provided."
+                },
+                {
+                    "role": "user",
+                    "content": f"""Based on the following context information, provide a clear and helpful answer to my question.
 
 CONTEXT:
 {context}
 
-USER QUESTION: {query}
+QUESTION: {query}
 
-INSTRUCTIONS:
-- Provide a comprehensive but concise answer
-- Use information from the context when relevant
-- If the context doesn't fully answer the question, acknowledge that
-- Keep your response professional and helpful
-
-ANSWER:"""
-        
-        logger.info(f"Prompt length: {len(prompt)} characters")
-        
-        # 4. Generate response with error handling
-        logger.info("Step 4: Generating Gemini response...")
-        
-        try:
-            response = model.generate_content(prompt)
-            logger.info("Gemini response generated successfully")
+Please provide a comprehensive but concise answer using the information from the context when relevant. If the context doesn't fully answer the question, acknowledge that and provide what you can."""
+                }
+            ]
             
-            # Debug response
-            if hasattr(response, 'candidates') and response.candidates:
-                candidate = response.candidates[0]
-                logger.info(f"Response finish_reason: {candidate.finish_reason}")
-                
-                # finish_reason values: 1=STOP, 2=MAX_TOKENS, 3=SAFETY, 4=RECITATION, 5=OTHER
-                if candidate.finish_reason == 3:  # SAFETY
-                    logger.warning("Response blocked by safety filters")
-                    return "I apologize, but I cannot provide a response to this query due to safety considerations. Please try rephrasing your question."
-                elif candidate.finish_reason == 2:  # MAX_TOKENS
-                    logger.warning("Response truncated due to token limit")
-                elif candidate.finish_reason != 1:  # Not STOP
-                    logger.warning(f"Unexpected finish_reason: {candidate.finish_reason}")
+            response = openai.chat.completions.create(
+                model="gpt-4o",
+                messages=messages,
+                max_tokens=1500,
+                temperature=0.7
+            )
             
-            # Extract response text
-            if hasattr(response, 'text') and response.text:
-                logger.info(f"Response text length: {len(response.text)} characters")
-                return response.text
-            else:
-                # Try to extract from candidates manually
-                if hasattr(response, 'candidates') and response.candidates:
-                    for candidate in response.candidates:
-                        if hasattr(candidate, 'content') and candidate.content and candidate.content.parts:
-                            for part in candidate.content.parts:
-                                if hasattr(part, 'text') and part.text:
-                                    logger.info("Extracted text from candidate parts")
-                                    return part.text
+            logger.info("OpenAI response generated successfully")
+            
+            answer = response.choices[0].message.content
+            logger.info(f"Response length: {len(answer)} characters")
+            
+            return answer
                 
-                logger.error("No valid text found in response")
-                return "I apologize, but I couldn't generate a proper response. Please try rephrasing your question."
-                
-        except Exception as gemini_error:
-            logger.error(f"Gemini API error: {str(gemini_error)}")
+        except Exception as openai_error:
+            logger.error(f"OpenAI API error: {str(openai_error)}")
             
             # Fallback response using context
             if context_parts:

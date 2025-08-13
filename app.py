@@ -15,7 +15,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="AI RAG + SerpApi + Gemini")
+app = FastAPI(title="AI RAG + SerpApi + OpenAI")
 
 class QueryRequest(BaseModel):
     query: str
@@ -64,7 +64,7 @@ def debug_info():
     
     try:
         # Test imports
-        import google.generativeai as genai
+        import openai
         import sentence_transformers
         from qdrant_client import QdrantClient
         from serpapi import GoogleSearch
@@ -72,13 +72,13 @@ def debug_info():
         debug_data = {
             "status": "ok",
             "imports": {
-                "google.generativeai": "✓",
+                "openai": "✓",
                 "sentence_transformers": "✓", 
                 "qdrant_client": "✓",
                 "serpapi": "✓"
             },
             "config": {
-                "gemini_api_key_set": bool(getattr(__import__('config'), 'GEMINI_API_KEY', None)),
+                "openai_api_key_set": bool(getattr(__import__('config'), 'OPENAI_API_KEY', None)),
                 "serpapi_key_set": bool(getattr(__import__('config'), 'SERPAPI_API_KEY', None)),
                 "qdrant_url_set": bool(getattr(__import__('config'), 'QDRANT_URL', None)),
                 "qdrant_api_key_set": bool(getattr(__import__('config'), 'QDRANT_API_KEY', None))

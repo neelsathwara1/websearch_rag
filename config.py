@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()  # Loads variables from .env file
 
 SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")

@@ -1,5 +1,5 @@
 """
-Test the RAG API directly without the server
+Test the OpenAI RAG API directly
 """
 
 from orchestrator import answer_query
@@ -22,13 +22,13 @@ def test_query(query):
         return False
 
 if __name__ == "__main__":
-    print("=== Direct RAG System Test ===")
+    print("=== OpenAI RAG System Test ===")
     
     # Test queries
     test_queries = [
         "What are Facebook ad targeting options?",
         "How does Meta Business Manager work?",
-        "What are Facebook campaign objectives?"
+        "What are the different Facebook campaign objectives?"
     ]
     
     passed = 0
@@ -38,3 +38,8 @@ if __name__ == "__main__":
     
     print(f"\n=== Results ===")
     print(f"Passed: {passed}/{len(test_queries)} tests")
+    
+    if passed == len(test_queries):
+        print("🎉 All tests passed! OpenAI RAG system is working perfectly!")
+    else:
+        print("⚠️ Some tests failed. Check the logs above.")
