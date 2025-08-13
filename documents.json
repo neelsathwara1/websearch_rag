@@ -1,0 +1,42 @@
+[
+  {
+    "text": "Facebook Ads Manager is a comprehensive tool for creating, managing, and optimizing advertising campaigns across Facebook, Instagram, Messenger, and Audience Network. It provides detailed analytics, audience targeting options, and budget management features. Users can create multiple ad sets within campaigns and test different creative variations to optimize performance.",
+    "title": "Facebook Ads Manager Overview",
+    "source": "facebook_help"
+  },
+  {
+    "text": "Facebook campaign objectives include Awareness (brand awareness, reach), Consideration (traffic, engagement, app installs, video views, lead generation, messages), and Conversion (conversions, catalog sales, store traffic). Each objective optimizes ad delivery for specific business goals and determines available ad formats and targeting options.",
+    "title": "Facebook Campaign Objectives",
+    "source": "facebook_help"
+  },
+  {
+    "text": "Facebook Ads targeting options include demographic targeting (age, gender, location, language), interest targeting based on user behavior and preferences, custom audiences from customer lists or website visitors, lookalike audiences based on existing customers, and behavioral targeting including purchase history and device usage patterns.",
+    "title": "Facebook Ads Targeting Options",
+    "source": "facebook_help"
+  },
+  {
+    "text": "Facebook Ad formats include single image ads, video ads, carousel ads (multiple images/videos), collection ads, slideshow ads, instant experience ads (formerly Canvas), and dynamic ads that automatically show relevant products to users who have expressed interest. Each format serves different marketing objectives and user experiences.",
+    "title": "Facebook Ad Formats",
+    "source": "facebook_help"
+  },
+  {
+    "text": "Facebook Ads bidding strategies include lowest cost, cost cap, bid cap, and target cost options. Advertisers can optimize for various metrics like link clicks, impressions, conversions, or app installs. The Facebook algorithm uses machine learning to deliver ads to users most likely to take the desired action within the specified budget constraints.",
+    "title": "Facebook Ads Bidding and Optimization",
+    "source": "facebook_help"
+  },
+  {
+    "text": "Facebook Pixel is a piece of code that tracks visitor actions on your website after clicking a Facebook ad. It enables conversion tracking, retargeting website visitors, building lookalike audiences, and optimizing ad delivery for conversions. The pixel data helps measure ad effectiveness and improve targeting accuracy.",
+    "title": "Facebook Pixel Tracking",
+    "source": "facebook_help"
+  },
+  {
+    "text": "Facebook Ads policies prohibit discriminatory advertising, misleading claims, adult content, illegal products or services, and low-quality landing pages. Ads must comply with community standards and local laws. The review process typically takes 24 hours, and rejected ads can be edited and resubmitted with necessary changes.",
+    "title": "Facebook Ads Policies and Guidelines",
+    "source": "facebook_help"
+  },
+  {
+    "text": "Meta Business Manager is a centralized platform for managing multiple Facebook Pages, ad accounts, and team member access permissions. It provides tools for collaboration, asset management, and security features like two-factor authentication. Business Manager is essential for agencies and businesses managing multiple clients or brands.",
+    "title": "Meta Business Manager Features",
+    "source": "meta_business"
+  }
+]

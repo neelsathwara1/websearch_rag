@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+openai
+tiktoken
+pydantic
+requests
+beautifulsoup4
+qdrant-client
+python-dotenv
+google-generativeai
+google-search-results
+sentence-transformers
+PyPDF2
+python-docx
+markdown
